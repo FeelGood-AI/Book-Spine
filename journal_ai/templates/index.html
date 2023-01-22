@@ -1,0 +1,21 @@
+{% load django_browser_reload %}
+{% load static %}
+
+<!doctype html>
+<html>
+
+<head>
+    <title>{{ title }}</title>
+    <link rel="stylesheet" href="{% static 'main.css' %}">
+
+<body>
+    <div class="App">
+        <header class="App-header">
+            <p>
+                Journal AI <span class="heart">♥️</span>
+            </p>
+        </header>
+    </div>
+</body>
+
+</html>
