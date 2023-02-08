@@ -43,6 +43,9 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "django_browser_reload",
     "journal_ai",
+    "journal_ai.memoirs",
+    "journal_ai.prompt_creator",
+    "journal_ai.insights",
     "rest_framework",
     "rest_framework.authtoken",
 ]
