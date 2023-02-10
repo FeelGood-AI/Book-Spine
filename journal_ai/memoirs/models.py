@@ -9,4 +9,7 @@ class Memoir(models.Model):
     text= models.CharField(max_length=5000)
     journaler = models.ForeignKey(User, on_delete=models.CASCADE)
     timestamp = models.DateTimeField()
-    prompt = models.ForeignKey(Prompt, on_delete=models.DO_NOTHING)
+    prompt = models.ForeignKey(Prompt,null=True, on_delete=models.SET_NULL)
+
+    def getPromptText(self):
+        return self.prompt.text if self.prompt else ''
