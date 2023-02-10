@@ -56,13 +56,3 @@ class UserRecordView(APIView):
             },
             status=status.HTTP_400_BAD_REQUEST
         )
-
-@api_view(['GET'])
-def getUserByUserName(request, username):
-        user = User.objects.filter(username=username).first()
-        if user:
-            serializer = UserSerializer(user)
-            return Response(serializer.data)
-        return Response({
-            'error': 'Invalid user specified'
-        })
