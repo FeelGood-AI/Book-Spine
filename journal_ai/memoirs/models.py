@@ -1,3 +1,4 @@
+import uuid
 from django.db import models
 from django.contrib.auth.models import User
 
@@ -5,7 +6,7 @@ from journal_ai.prompt_creator.models import Prompt
 
 
 class Memoir(models.Model):
-    id = models.IntegerField(primary_key=True)
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     text= models.CharField(max_length=5000)
     journaler = models.ForeignKey(User, on_delete=models.CASCADE)
     timestamp = models.DateTimeField()

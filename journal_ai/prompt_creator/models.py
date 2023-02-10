@@ -1,3 +1,4 @@
+import uuid
 from django.db import models
 from django.contrib.auth.models import User
 
@@ -9,7 +10,7 @@ PROMPT_TYPES = (
     ("4", "Introspection"),
 )
 class Prompt(models.Model):
-    id = models.IntegerField(primary_key=True)
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     text= models.CharField(max_length=500)
     date = models.DateField()
     users = models.ManyToManyField(User)

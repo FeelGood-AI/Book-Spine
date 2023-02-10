@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from .serializers import MemoirSerializer
+from .serializers import MemoirPostSerializer, MemoirSerializer
 from rest_framework import status
 from .models import Memoir
 from rest_framework.decorators import api_view
@@ -17,13 +17,13 @@ class MemoirView(APIView):
     """
     permission_classes = []
 
-    def get(self, request, pk, format=None):
-        memoir = Memoir.objects.get(pk=pk)
-        serializer = MemoirSerializer(memoir)
-        return Response(serializer.data)
+    # def get(self, request, format=None):
+    #     memoir = Memoir.objects.all()
+    #     serializer = MemoirSerializer(memoir, many=True)
+    #     return Response(serializer.data)
 
     def post(self, request):
-        serializer = MemoirSerializer(data=request.data)
+        serializer = MemoirPostSerializer(data=request.data)
         if serializer.is_valid(raise_exception=ValueError):
             serializer.create(validated_data=request.data)
             return Response(
