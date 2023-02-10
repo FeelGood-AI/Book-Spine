@@ -40,8 +40,8 @@ class MemoirView(APIView):
 
 
 @api_view(['GET'])
-def getMemoirsByUser(request, user_id):
-    user = User.objects.filter(pk=user_id).first()
+def getMemoirsByUser(request, username):
+    user = User.objects.filter(username=username).first()
     if user:
         memoirs = Memoir.objects.filter(journaler=user)
         serializer = MemoirSerializer(memoirs, many=True)
