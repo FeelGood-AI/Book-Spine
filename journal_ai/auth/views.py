@@ -1,3 +1,6 @@
+import datetime
+
+from journal_ai.prompt_creator.models import Prompt
 from .serializers import UserSerializer
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -34,6 +37,12 @@ class UserRecordView(APIView):
                 )
             if serializer.is_valid(raise_exception=ValueError):
                 created_user = serializer.create(validated_data=request.data)
+                now = datetime.datetime.now()
+                all_prompts = Prompt.objects.filter(date__gte=now.date())
+                for prompt in all_prompts:
+                    prompt.users.add(created_user)
+                    prompt.save()
+                
                 return Response(
                     {
                         'username': created_user.username,
