@@ -10,6 +10,7 @@ class Insight(models.Model):
     release_timestamp = models.DateTimeField()
     memoir = models.ForeignKey(Memoir, on_delete=models.CASCADE)
     helpful = models.BooleanField(null=True)
+    read = models.BooleanField(default=False)
 
     def getMemoirText(self):
         return self.memoir.text if self.memoir else ''

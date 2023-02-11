@@ -5,7 +5,7 @@ from rest_framework.validators import UniqueTogetherValidator
 
 class InsightSerializer(serializers.ModelSerializer):
     prompt_text = serializers.ReadOnlyField(source='getPromptText')
-    memoir_text = serializers.ReadOnlyField(source='getMemoirText')
+    memoirs_text = serializers.ReadOnlyField(source='getMemoirText')
 
     def create(self, validated_data):
         memoir = Insight.objects.create(**validated_data)
@@ -17,8 +17,9 @@ class InsightSerializer(serializers.ModelSerializer):
             'journaler',
             'helpful',
             'prompt_text',
-            'memoir_text'
+            'memoirs_text',
             'release_timestamp',
+            'read',
             'id',
         )
         validators = [

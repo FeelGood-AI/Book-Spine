@@ -52,7 +52,7 @@ def getInsightByMemoir(request, memoir_id):
 def getInsightByMemoir(request, memoir_id):
     memoir = Memoir.objects.filter(pk=memoir_id).first()
     if memoir:
-        insight = Memoir.objects.filter(memoir=memoir).first()
+        insight = Insight.objects.filter(memoir=memoir).first()
         serializer = InsightSerializer(insight)
         return Response(serializer.data)
     return Response({
@@ -81,9 +81,35 @@ class MarkInsightHelpful(APIView):
     def post(self, request, insight_id):
         insight = Insight.objects.get(pk=insight_id)
         if insight:
-            serializer = InsightSerializer(insight, data=request.data)
-            if serializer.is_valid():
-                serializer.save()
-                return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            insight.helpful = request.data['helpful']
+            serializer = InsightSerializer(insight)
+            insight.save()
+            return Response(serializer.data)
+        return Response({'error': 'Invalid Request'}, status=status.HTTP_400_BAD_REQUEST)
         
+class MarkInsightRead(APIView):
+    """
+    API View to get or post an insight as read.
+    """
+    permission_classes = []
+
+    def get(self, request, insight_id, format=None):
+        insight = Insight.objects.get(pk=insight_id)
+        if insight:
+            return Response({
+                'insight_id': insight.id,
+                'read': insight.read
+            })
+        else:
+            return Response({
+                'error': 'Invalid insight id'
+            })
+
+    def post(self, request, insight_id):
+        insight = Insight.objects.get(pk=insight_id)
+        if insight:
+            insight.read = request.data['read']
+            serializer = InsightSerializer(insight)
+            insight.save()
+            return Response(serializer.data)
+        return Response({'error': 'Invalid Request'}, status=status.HTTP_400_BAD_REQUEST)

@@ -7,7 +7,8 @@ from django.contrib.auth.models import User
 
 
 class MemoirSerializer(serializers.ModelSerializer):
-    prompt_text = serializers.ReadOnlyField(source='getPromptText')
+    prompt = serializers.ReadOnlyField(source='getPrompt')
+    insight = serializers.ReadOnlyField(source='getInsight')
 
     def create(self, validated_data):
         memoir = Memoir.objects.create(**validated_data)
@@ -18,9 +19,10 @@ class MemoirSerializer(serializers.ModelSerializer):
         fields = (
             'journaler',
             'timestamp',
-            'prompt_text',
+            'prompt',
             'text',
             'id',
+            'insight'
         )
         validators = [
             UniqueTogetherValidator(

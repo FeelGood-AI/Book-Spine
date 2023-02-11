@@ -12,5 +12,21 @@ class Memoir(models.Model):
     timestamp = models.DateTimeField()
     prompt = models.ForeignKey(Prompt,null=True, on_delete=models.SET_NULL)
 
-    def getPromptText(self):
-        return self.prompt.text if self.prompt else ''
+    def getPrompt(self):
+        if self.prompt:
+            return {
+                'text': self.prompt.text,
+                'date': self.prompt.date
+            }
+        return {}
+
+    def getInsight(self):
+        insight = self.insight_set.all().first()
+        if insight:
+            return {
+                'text': insight.text,
+                'helpful': insight.helpful,
+                'read': insight.read,
+                'id': insight.id,
+            }
+        return {}
