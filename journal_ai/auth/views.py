@@ -16,7 +16,6 @@ class UserRecordView(APIView):
     users. GET request returns the registered users info whereas
     a POST request allows to create a new user.
     """
-    permission_classes = [IsAdminUser]
 
     def get(self, format=None):
         users = User.objects.all()
