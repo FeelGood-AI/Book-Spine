@@ -36,7 +36,7 @@ class UserRecordView(APIView):
                 )
             if serializer.is_valid(raise_exception=ValueError):
                 created_user = serializer.create(validated_data=request.data)
-                now = datetime.datetime.now()
+                now = datetime.datetime.now() - datetime.timedelta(days=2)
                 all_prompts = Prompt.objects.filter(date__gte=now.date())
                 for prompt in all_prompts:
                     prompt.users.add(created_user)
