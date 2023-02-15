@@ -16,3 +16,4 @@ class Prompt(models.Model):
     users = models.ManyToManyField(User)
     icon = models.CharField(max_length=100, null=True)
     type = models.CharField(max_length=25,choices=PROMPT_TYPES, default='Random')
+    example_text= models.CharField(max_length=500 , null=True, default="Write Something...")

@@ -17,6 +17,7 @@ class PromptSerializer(serializers.ModelSerializer):
             'date',
             'icon',
             'type',
+            'example_text'
         )
         validators = [
             UniqueTogetherValidator(
