@@ -82,7 +82,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = "journal_ai.wsgi.application"
-
+STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
 
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
