@@ -1,3 +1,5 @@
+import hashlib
+import os
 from django.shortcuts import render
 
 # Create your views here.
@@ -41,23 +43,36 @@ class InsightView(APIView):
 def getInsightByMemoir(request, memoir_id):
     memoir = Memoir.objects.filter(pk=memoir_id).first()
     if memoir:
-        insight = Memoir.objects.filter(memoir=memoir).first()
-        serializer = InsightSerializer(insight)
-        return Response(serializer.data)
-    return Response({
-        'error': 'Invalid memoir specified'
-    })
-
-@api_view(['GET'])
-def getInsightByMemoir(request, memoir_id):
-    memoir = Memoir.objects.filter(pk=memoir_id).first()
-    if memoir:
         insight = Insight.objects.filter(memoir=memoir).first()
         serializer = InsightSerializer(insight)
         return Response(serializer.data)
     return Response({
         'error': 'Invalid memoir specified'
     })
+
+@api_view(['POST'])
+def putInsightIntoMemoir(request, memoir_id, auth_key):
+    result = hashlib.md5(b'{auth_key}').hexdigest()
+    if result != os.getenv('AUTH_KEY'):
+        return Response({
+            'error': 'Invalid auth key'
+        })
+    user = User.objects.filter(pk=request.data['journaler']).first()
+    if not user:
+        return Response({
+            'error': 'Invalid journaler'
+        }) 
+
+    memoir = Memoir.objects.filter(pk=memoir_id).first()
+    if not memoir:
+         return Response({
+            'error': 'Invalid memoir id'
+        }) 
+    insight = Insight(text=request.data['text'],release_timestamp=request.data['release_timestamp'], memoir=memoir, journaler=user)
+    insight.save()
+    serializer = InsightSerializer(insight)
+    return Response(serializer.data, status=201)
+
 
 
 class MarkInsightHelpful(APIView):
