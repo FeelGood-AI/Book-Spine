@@ -20,6 +20,7 @@ class InsightSerializer(serializers.ModelSerializer):
             'memoirs_text',
             'release_timestamp',
             'read',
+            'text',
             'id',
         )
         validators = [

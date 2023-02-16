@@ -68,10 +68,30 @@ def putInsightIntoMemoir(request, memoir_id, auth_key):
          return Response({
             'error': 'Invalid memoir id'
         }) 
-    insight = Insight(text=request.data['text'],release_timestamp=request.data['release_timestamp'], memoir=memoir, journaler=user)
-    insight.save()
-    serializer = InsightSerializer(insight)
-    return Response(serializer.data, status=201)
+    
+    try:
+        insight = Insight.objects.filter(memoir=memoir, journaler=user).first()
+        created= True
+        if insight:
+            insight.text = request.data['text']   
+            insight.release_timestamp = request.data['release_timestamp']
+            created = False
+        else:
+            insight = Insight(memoir=memoir, journaler=user, release_timestamp=request.data['release_timestamp'], text=request.data['text'])
+        final_status = 200
+        if created:
+            final_status = 201
+        else:
+            insight.read = False
+            insight.helpful = None
+        insight.save()
+        serializer = InsightSerializer(insight)
+        return Response(serializer.data, status=final_status)
+    except Exception as e:
+        print(e)
+        return Response({
+            'error': 'an error has occurred'
+        })
 
 
 
