@@ -1,3 +1,5 @@
+import datetime
+import os
 from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -6,6 +8,8 @@ from rest_framework import status
 from .models import Memoir
 from rest_framework.decorators import api_view
 from django.contrib.auth.models import User
+import hashlib
+
 
 
 
@@ -48,4 +52,24 @@ def getMemoirsByUser(request, username):
         return Response(serializer.data)
     return Response({
         'error': 'Invalid User specified'
+    })
+
+@api_view(['GET'])
+def getMemoirsByDate(request, auth_key):
+
+    result = hashlib.md5(b'{auth_key}').hexdigest()
+    print(result)
+    if result != os.getenv('AUTH_KEY'):
+        return Response({
+            'error': 'Invalid auth key'
+        })
+
+    date = request.query_params.get('date', None)
+    if date:
+        db_date = datetime.date(*[int(x) for x in date.split('-')])
+        memoirs = Memoir.objects.filter(prompt__date=db_date)
+        serializer = MemoirSerializer(memoirs, many=True)
+        return Response(serializer.data)
+    return Response({
+        'error': 'Invalid Date specified'
     })
