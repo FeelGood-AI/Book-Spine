@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     "journal_ai.insights",
     "rest_framework",
     "rest_framework.authtoken",
+    'silk'
 ]
 
 MIDDLEWARE = [
@@ -59,6 +60,8 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "django_browser_reload.middleware.BrowserReloadMiddleware",
+    'silk.middleware.SilkyMiddleware',
+
 ]
 
 X_FRAME_OPTIONS = "ALLOW-FROM preview.app.github.dev"

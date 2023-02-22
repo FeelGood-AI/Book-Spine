@@ -28,3 +28,5 @@ urlpatterns = [
     path("memoir/", include('journal_ai.memoirs.urls')),
     path("insight/", include('journal_ai.insights.urls'))
 ]
+urlpatterns += [path('silk/', include('silk.urls', namespace='silk'))]
+
