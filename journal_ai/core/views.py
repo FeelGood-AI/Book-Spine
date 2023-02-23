@@ -34,11 +34,12 @@ def getStats(request, auth_key):
     now = datetime.datetime.now(pytz.timezone('US/Eastern')).date()
     yesterday = (datetime.datetime.now(pytz.timezone('US/Eastern')) - datetime.timedelta(days=1)).date()
     memoirsCount = Memoir.objects.filter(prompt__date=now).count()
+
     insights = Insight.objects.filter(memoir__prompt__date=now)
     insightCount = insights.count()
     totalTrue = insights.filter(helpful=True).count()
     totalFalse = insights.filter(helpful=False).count()
-
+    insightsall = Insight.objects.all().count()
     memoirsCountY = Memoir.objects.filter(prompt__date=yesterday).count()
     insightsY = Insight.objects.filter(memoir__prompt__date=yesterday)
     insightCountY = insightsY.count()
@@ -47,7 +48,7 @@ def getStats(request, auth_key):
 
 
     return render(request, "stats.html",{'userCount':userCount,'entriesToday':memoirsCount, 
-                                         'insightToday': insightCount, 'helpful': 
+                                         'insightToday': insightsall, 'helpful': 
                                          totalTrue, 'notHelpful': totalFalse,
                                          'feedbackInsight': totalFalse+totalTrue, 
                                          'entriesY':memoirsCountY, 'insightY': insightCountY, 
