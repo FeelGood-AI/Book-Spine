@@ -54,6 +54,17 @@ def getMemoirsByUser(request, username):
         'error': 'Invalid User specified'
     })
 
+
+@api_view(['GET'])
+def getMemoirsByUser(request, username):
+    user = User.objects.filter(username=username).first()
+    if user:
+        memoirs = Memoir.objects.filter(journaler=user)
+        serializer = MemoirSerializer(memoirs, many=True)
+        return Response(serializer.data)
+    return Response({
+        'error': 'Invalid User specified'
+    })
 @api_view(['GET'])
 def getMemoirsByDate(request, auth_key):
 
@@ -73,3 +84,25 @@ def getMemoirsByDate(request, auth_key):
     return Response({
         'error': 'Invalid Date specified'
     })
+
+
+@api_view(['GET'])
+def getNoInsightMemoirsByDate(request, auth_key):
+
+    result = hashlib.md5(b'{auth_key}').hexdigest()
+    print(result)
+    if result != os.getenv('AUTH_KEY'):
+        return Response({
+            'error': 'Invalid auth key'
+        })
+
+    date = request.query_params.get('date', None)
+    if date:
+        db_date = datetime.date(*[int(x) for x in date.split('-')])
+        memoirs = Memoir.objects.filter(prompt__date=db_date, insight=None)
+        serializer = MemoirSerializer(memoirs, many=True)
+        return Response(serializer.data)
+    return Response({
+        'error': 'Invalid Date specified'
+    })
+

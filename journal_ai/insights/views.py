@@ -72,7 +72,10 @@ def putInsightIntoMemoir(request, memoir_id, auth_key):
     try:
         insight = Insight.objects.filter(memoir=memoir, journaler=user).first()
         created= True
+        markReadFalse = True
         if insight:
+            if insight.text == request.data['text']:
+                markReadFalse = False
             insight.text = request.data['text']   
             insight.release_timestamp = request.data['release_timestamp']
             created = False
@@ -82,8 +85,9 @@ def putInsightIntoMemoir(request, memoir_id, auth_key):
         if created:
             final_status = 201
         else:
-            insight.read = False
-            insight.helpful = None
+            if markReadFalse:
+                insight.read = False
+                insight.helpful = None
         insight.save()
         serializer = InsightSerializer(insight)
         return Response(serializer.data, status=final_status)
