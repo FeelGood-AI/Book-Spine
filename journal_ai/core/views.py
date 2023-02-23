@@ -31,8 +31,8 @@ def getStats(request, auth_key):
             },
         )
     userCount = User.objects.all().count()
-    now = datetime.datetime.now(pytz.timezone('US/Eastern'))
-    yesterday = datetime.datetime.now(pytz.timezone('US/Eastern')) - datetime.timedelta(days=1)
+    now = datetime.datetime.now(pytz.timezone('US/Eastern')).date()
+    yesterday = (datetime.datetime.now(pytz.timezone('US/Eastern')) - datetime.timedelta(days=1)).date()
     memoirsCount = Memoir.objects.filter(prompt__date=now).count()
     insights = Insight.objects.filter(memoir__prompt__date=now)
     insightCount = insights.count()
