@@ -4,7 +4,6 @@ from django.shortcuts import render
 import datetime
 from django.shortcuts import render
 import pytz
-from requests import Response
 from rest_framework.decorators import api_view
 from django.contrib.auth.models import User
 from journal_ai.insights.models import Insight
