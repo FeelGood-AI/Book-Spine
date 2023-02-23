@@ -1,9 +1,14 @@
+import hashlib
+import os
 from django.shortcuts import render
-from rest_framework.response import Response
-from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import IsAuthenticated
-from journal_ai.models import Test
-from journal_ai.core.serializers import TestSerializer
+import datetime
+from django.shortcuts import render
+import pytz
+from requests import Response
+from rest_framework.decorators import api_view
+from django.contrib.auth.models import User
+from journal_ai.insights.models import Insight
+from journal_ai.memoirs.models import Memoir
 
 def index(request):
     return render(
@@ -14,20 +19,38 @@ def index(request):
         },
     )
 
-
-# TEST VIEW meant to illustrate how get view are written
-# Example of permission decorator usage 
 @api_view(['GET'])
-@permission_classes([IsAuthenticated])
-def getTest(request):
-    food = Test.objects.all()
-    serializer = TestSerializer(food, many=True)
-    return Response(serializer.data)
+def getStats(request, auth_key):
+    test = bytes(auth_key, 'utf-8')
+    result = hashlib.md5(test).hexdigest()
+    if result != os.getenv('AUTH_KEY'):
+        return render(
+            request,
+            "index.html",
+            {
+                "title": "Django example",
+            },
+        )
+    userCount = User.objects.all().count()
+    now = datetime.datetime.now(pytz.timezone('US/Eastern'))
+    yesterday = datetime.datetime.now(pytz.timezone('US/Eastern')) - datetime.timedelta(days=1)
+    memoirsCount = Memoir.objects.filter(prompt__date=now).count()
+    insights = Insight.objects.filter(memoir__prompt__date=now)
+    insightCount = insights.count()
+    totalTrue = insights.filter(helpful=True).count()
+    totalFalse = insights.filter(helpful=False).count()
+
+    memoirsCountY = Memoir.objects.filter(prompt__date=yesterday).count()
+    insightsY = Insight.objects.filter(memoir__prompt__date=yesterday)
+    insightCountY = insightsY.count()
+    totalTrueY = insightsY.filter(helpful=True).count()
+    totalFalseY = insightsY.filter(helpful=False).count()
 
 
-@api_view(['POST'])
-def postTest(request):
-    serializer = TestSerializer(data=request.data)
-    if serializer.is_valid():
-        serializer.save()
-    return Response(serializer.data)
+    return render(request, "stats.html",{'userCount':userCount,'entriesToday':memoirsCount, 
+                                         'insightToday': insightCount, 'helpful': 
+                                         totalTrue, 'notHelpful': totalFalse,
+                                         'feedbackInsight': totalFalse+totalTrue, 
+                                         'entriesY':memoirsCountY, 'insightY': insightCountY, 
+                                         'helpfulY': totalTrueY, 'notHelpfulY': totalFalseY,
+                                         'feedbackInsightY': totalFalseY+totalTrueY })

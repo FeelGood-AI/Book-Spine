@@ -1,0 +1,58 @@
+{% load django_browser_reload %}
+{% load static %}
+
+<!doctype html>
+<html>
+
+<head>
+    <title>{{ title }}</title>
+    <link rel="stylesheet" href="{% static 'main.css' %}">
+
+<body>
+    <div class="App">
+        <header class="App-header">
+            <p>
+                Total Users <span class="heart"> {{ userCount }}</span>
+            </p>
+            <div style="display:flex;">
+            <div style="margin-right: 32px;">
+                <p>
+                    Entries Today<span class="heart"> {{ entriesToday }}</span>
+                </p>
+                <p>
+                    Insights Today<span class="heart"> {{ insightToday }}</span>
+                </p>
+                <p>
+                    Insights Feedback Today<span class="heart"> {{ feedbackInsight }}</span>
+                </p>
+                <p>
+                    Insights Feedback Helpful<span class="heart"> {{ helpful }}</span>
+                </p>
+                <p>
+                    Insights Feedback Not Helpful<span class="heart"> {{ notHelpful }}</span>
+                </p>
+            </div>
+
+            <div>
+                <p>
+                    Entries Yesterday<span class="heart"> {{ entriesY }}</span>
+                </p>
+                <p>
+                    Insights Yesterday<span class="heart"> {{ insightY }}</span>
+                </p>
+                <p>
+                    Insights Feedback Yesterday<span class="heart"> {{ feedbackInsightY }}</span>
+                </p>
+                <p>
+                    Insights Feedback Helpful<span class="heart"> {{ helpfulY }}</span>
+                </p>
+                <p>
+                    Insights Feedback Not Helpful<span class="heart"> {{ notHelpfulY }}</span>
+                </p>
+            </div>
+            </div>
+        </header>
+    </div>
+</body>
+
+</html>

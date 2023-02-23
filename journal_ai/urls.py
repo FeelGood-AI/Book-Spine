@@ -22,7 +22,7 @@ urlpatterns = [
     path("", core_views.index),
     path("admin/", admin.site.urls),
     path("__reload__/", include("django_browser_reload.urls")),
-    path("test/", include('journal_ai.core.urls')),
+    path("stats/", include('journal_ai.core.urls')),
     path("auth/", include('journal_ai.auth.urls')),
     path("prompt/", include('journal_ai.prompt_creator.urls')),
     path("memoir/", include('journal_ai.memoirs.urls')),

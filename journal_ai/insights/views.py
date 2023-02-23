@@ -52,7 +52,8 @@ def getInsightByMemoir(request, memoir_id):
 
 @api_view(['POST'])
 def putInsightIntoMemoir(request, memoir_id, auth_key):
-    result = hashlib.md5(b'{auth_key}').hexdigest()
+    test = bytes(auth_key, 'utf-8')
+    result = hashlib.md5(test).hexdigest()
     if result != os.getenv('AUTH_KEY'):
         return Response({
             'error': 'Invalid auth key'

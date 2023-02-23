@@ -67,9 +67,8 @@ def getMemoirsByUser(request, username):
     })
 @api_view(['GET'])
 def getMemoirsByDate(request, auth_key):
-
-    result = hashlib.md5(b'{auth_key}').hexdigest()
-    print(result)
+    test = bytes(auth_key, 'utf-8')
+    result = hashlib.md5(test).hexdigest()
     if result != os.getenv('AUTH_KEY'):
         return Response({
             'error': 'Invalid auth key'
@@ -88,9 +87,8 @@ def getMemoirsByDate(request, auth_key):
 
 @api_view(['GET'])
 def getNoInsightMemoirsByDate(request, auth_key):
-
-    result = hashlib.md5(b'{auth_key}').hexdigest()
-    print(result)
+    test = bytes(auth_key, 'utf-8')
+    result = hashlib.md5(test).hexdigest()
     if result != os.getenv('AUTH_KEY'):
         return Response({
             'error': 'Invalid auth key'

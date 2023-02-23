@@ -64,6 +64,9 @@ MIDDLEWARE = [
 
 ]
 
+SILKY_AUTHENTICATION = True  # User must login
+SILKY_AUTHORISATION = True  # User must have permissions
+
 X_FRAME_OPTIONS = "ALLOW-FROM preview.app.github.dev"
 
 ROOT_URLCONF = "journal_ai.urls"
