@@ -9,7 +9,10 @@ from .models import Memoir
 from rest_framework.decorators import api_view
 from django.contrib.auth.models import User
 import hashlib
-
+import requests
+from ..insights.models import Insight
+from .tasks import get_insight
+BASE_ENDPOINT = os.environ.get('BASE_ENDPOINT')
 
 
 
@@ -27,11 +30,20 @@ class MemoirView(APIView):
     #     return Response(serializer.data)
 
     def post(self, request):
+        # print("post request data:", request.data)
         serializer = MemoirPostSerializer(data=request.data)
+        # print("created serializer")
         if serializer.is_valid(raise_exception=ValueError):
-            serializer.create(validated_data=request.data)
+            # print("serializer is valid")
+            memoir = serializer.create(validated_data=request.data)
+            print(request.data['journaler'].id)
+            print(memoir.id)
+            get_insight.delay(request.data['journaler'].id, memoir.id)
+            response_dict = serializer.data
+            response_dict['id'] = memoir.id
+            print("response dict:", response_dict)
             return Response(
-                serializer.data,
+                response_dict,
                 status=status.HTTP_201_CREATED
             )
         return Response(
@@ -42,6 +54,24 @@ class MemoirView(APIView):
             status=status.HTTP_400_BAD_REQUEST
         )
 
+@api_view(['GET'])
+def getMemoirByMemoirId(request, memoir_id):
+    memoir = Memoir.objects.filter(pk=memoir_id).first()
+    if memoir:
+        insight = Insight.objects.filter(memoir=memoir).first()
+        if insight:
+            serializer = MemoirSerializer(memoir)
+            response_dict = serializer.data
+            response_dict['insight_available'] = True
+            return Response(response_dict)
+        else:
+            response_dict = {}
+            response_dict['insight_available'] = False
+            return Response(response_dict)
+
+    return Response({
+        'error': 'Invalid memoir id'
+    })
 
 @api_view(['GET'])
 def getMemoirsByUser(request, username):
