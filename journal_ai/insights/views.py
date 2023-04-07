@@ -58,7 +58,7 @@ def getInsightByMemoir(request, memoir_id):
 def anonymizeText(request):
     text=request.data['text']
     # Call analyzer to get results
-    results = PRESIDIO_ANALYZER.analyze(text=text, language='en')
+    results = PRESIDIO_ANALYZER.analyze(text=text, language='en', score_threshold=0.3)
     # Analyzer results are passed to the AnonymizerEngine for anonymization
     anonymized_text = PRESIDIO_ANONYMIZER.anonymize(text=text,analyzer_results=results)
     print(anonymized_text)
