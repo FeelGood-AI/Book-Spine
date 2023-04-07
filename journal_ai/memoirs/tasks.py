@@ -13,10 +13,10 @@ from django.utils import timezone
 BASE_ENDPOINT = os.environ.get('BASE_ENDPOINT')
 
 logger = get_task_logger(__name__)
+
 # create a shared task to call an external API for getting insight given prompt and journal entry
 @shared_task
 def get_insight(journaler_id, memoir_id):
-    time.sleep(30)
     user = User.objects.filter(pk=journaler_id).first()
     if not user:
         logger.info('user not found for journaler id: {0}'.format(journaler_id))
@@ -26,17 +26,15 @@ def get_insight(journaler_id, memoir_id):
     logger.info(f"jprompt: {jprompt.keys()}")
     jprompt = jprompt['text']
     entry = memoir.text
-    logger.info(f"entry: {entry}, jprompt: {jprompt}")
     url = f"{BASE_ENDPOINT}/get_insight?entry={entry}&jprompt={jprompt}"
     response = requests.request("GET", url)
 
     insight_text = eval(response.text)['insight']
     insight_text = insight_text.encode('raw_unicode_escape').decode('unicode_escape').encode('utf-16_BE','surrogatepass').decode('utf-16_BE')
-    logger.info(f"insight_text: {insight_text}")
     if not memoir:
         logger.info('memoir not found for memoir id: {0}'.format(memoir_id))
         return
-    # try:
+    
     insight = Insight.objects.filter(memoir=memoir, journaler=user).first()
     insight = Insight(memoir=memoir, journaler=user, release_timestamp=timezone.now(), text=insight_text)
     insight.save()

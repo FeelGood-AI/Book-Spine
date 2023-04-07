@@ -24,24 +24,13 @@ class MemoirView(APIView):
     """
     permission_classes = []
 
-    # def get(self, request, format=None):
-    #     memoir = Memoir.objects.all()
-    #     serializer = MemoirSerializer(memoir, many=True)
-    #     return Response(serializer.data)
-
     def post(self, request):
-        # print("post request data:", request.data)
         serializer = MemoirPostSerializer(data=request.data)
-        # print("created serializer")
         if serializer.is_valid(raise_exception=ValueError):
-            # print("serializer is valid")
             memoir = serializer.create(validated_data=request.data)
-            print(request.data['journaler'].id)
-            print(memoir.id)
             get_insight.delay(request.data['journaler'].id, memoir.id)
             response_dict = serializer.data
             response_dict['id'] = memoir.id
-            print("response dict:", response_dict)
             return Response(
                 response_dict,
                 status=status.HTTP_201_CREATED
