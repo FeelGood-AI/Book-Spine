@@ -13,22 +13,6 @@ class MemoirSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         memoir = Memoir.objects.create(**validated_data)
         return memoir
-    
-    # def create(self, validated_data):
-    #     journaler_obj = User.objects.filter(pk=validated_data['journaler']).first()
-    #     prompt_obj = Prompt.objects.filter(pk=validated_data['prompt']).first()
-    #     validated_data['journaler'] = journaler_obj
-    #     validated_data['prompt'] = prompt_obj
-    #     print(validated_data)
-    #     try:
-    #         memoir = Memoir.objects.create(**validated_data)
-    #         print("memoir created")
-    #         print(memoir.id)
-    #     except:
-    #         return {
-    #             'error': "Invalid journaler or prompt",
-    #         } 
-    #     return memoir
 
     class Meta:
         model = Memoir
