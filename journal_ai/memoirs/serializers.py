@@ -50,8 +50,9 @@ class MemoirPostSerializer(serializers.ModelSerializer):
         fields = (
             'journaler',
             'timestamp',
+            'prompt',
             'text',
-            'prompt'
+            'id',
         )
         validators = [
             UniqueTogetherValidator(
