@@ -19,6 +19,8 @@ gprof2dot==2022.7.29
 gunicorn==20.1.0
 idna==3.4
 kombu==5.2.4
+presidio_analyzer==2.2.32
+presidio_anonymizer==2.2.32
 prompt-toolkit==3.0.38
 psycopg2-binary==2.9.5
 pycodestyle==2.10.0
