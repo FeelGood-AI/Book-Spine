@@ -11,7 +11,11 @@ from rest_framework import status
 from rest_framework.decorators import api_view
 from django.contrib.auth.models import User
 from journal_ai.memoirs.models import Memoir
+from presidio_analyzer import AnalyzerEngine
+from presidio_anonymizer import AnonymizerEngine
 
+PRESIDIO_ANALYZER = AnalyzerEngine()
+PRESIDIO_ANONYMIZER = AnonymizerEngine()
 
 
 from .models import Insight
@@ -48,6 +52,18 @@ def getInsightByMemoir(request, memoir_id):
         return Response(serializer.data)
     return Response({
         'error': 'Invalid memoir specified'
+    })
+
+@api_view(['POST'])
+def anonymizeText(request):
+    text=request.data['text']
+    # Call analyzer to get results
+    results = PRESIDIO_ANALYZER.analyze(text=text, language='en', score_threshold=0.3)
+    # Analyzer results are passed to the AnonymizerEngine for anonymization
+    anonymized_text = PRESIDIO_ANONYMIZER.anonymize(text=text,analyzer_results=results)
+    print(anonymized_text)
+    return Response({
+        'text': anonymized_text.text
     })
 
 @api_view(['POST'])

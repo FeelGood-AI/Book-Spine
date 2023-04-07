@@ -1,4 +1,5 @@
 import datetime
+from journal_ai.auth.models import UserData
 
 from journal_ai.prompt_creator.models import Prompt
 from .serializers import UserSerializer
@@ -25,17 +26,20 @@ class UserRecordView(APIView):
     def post(self, request):
         serializer = UserSerializer(data=request.data)
         try:
-            fetched_user = User.objects.filter(username=request.data['username']).first()
+            fetched_user = User.objects.filter(username=request.data['username']).first() 
             if fetched_user:
+                fetched_userData, _ = UserData.objects.get_or_create(user=fetched_user)
                 return Response(
                     {
                         'username': fetched_user.username,
                         'id': fetched_user.id,
+                        'onboarding_complete': fetched_userData.onboarding_complete,
                     },
                     status=status.HTTP_200_OK
                 )
             if serializer.is_valid(raise_exception=ValueError):
                 created_user = serializer.create(validated_data=request.data)
+                created_user_data = UserData.objects.create(user=created_user)
                 now = datetime.datetime.now() - datetime.timedelta(days=2)
                 all_prompts = Prompt.objects.filter(date__gte=now.date())
                 for prompt in all_prompts:
@@ -46,6 +50,7 @@ class UserRecordView(APIView):
                     {
                         'username': created_user.username,
                         'id': created_user.id,
+                        'onboarding_complete': created_user_data.onboarding_complete,
                     },
                     status=status.HTTP_201_CREATED
                 )
@@ -64,3 +69,21 @@ class UserRecordView(APIView):
             },
             status=status.HTTP_400_BAD_REQUEST
         )
+    
+
+@api_view(['POST'])
+def acceptOnboardingForUser(request):
+    user = User.objects.filter(username=request.data['username']).first()
+    if not user:
+        return Response({
+            'error': 'Invalid User'
+        }) 
+
+    user_data = UserData.objects.filter(user=user).first()
+    user_data.onboarding_complete = True
+    user_data.save()
+    return Response({
+        'username': user_data.user.username,
+        'id': user_data.user.id,
+        'onboarding_complete': user_data.onboarding_complete,
+})
