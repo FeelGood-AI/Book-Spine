@@ -10,6 +10,10 @@ The backend framework written in django while using postgres as a DB
 5. Run ```python3 -m spacy download en_core_web_lg```
 6. Install redis (On Mac: ```brew install redis```)
 
+# Presidio Installation
+1. open a python terminal from the virtual environment
+2. Run '''>>import spacy.cli'''
+3. Run '''>>spacy.cli.download("en_core_web_lg")'''
 
 # Run Server
 ```python manage.py runserver ```
