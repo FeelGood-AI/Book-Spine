@@ -19,8 +19,8 @@ The backend framework written in django while using postgres as a DB
 ```python manage.py runserver ```
 
 # Run Celery 
-```redis-server```
-```python -m celery -A journal_ai worker -l info```
+1. ```redis-server```
+2. ```python -m celery -A journal_ai worker -l info```
 
 # Migrations
 ```python manage.py makemigrations```

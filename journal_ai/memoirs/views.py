@@ -28,7 +28,10 @@ class MemoirView(APIView):
         serializer = MemoirPostSerializer(data=request.data)
         if serializer.is_valid(raise_exception=ValueError):
             memoir = serializer.create(validated_data=request.data)
-            get_insight.delay(request.data['journaler'].id, memoir.id)
+            try:
+                get_insight.delay(request.data['journaler'].id, memoir.id)
+            except Exception as e:
+                print("get_insight failed immediately with: ", e)
             response_dict = serializer.data
             response_dict['id'] = memoir.id
             return Response(
