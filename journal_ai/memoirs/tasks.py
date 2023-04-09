@@ -11,7 +11,7 @@ from ..insights.serializers import InsightSerializer
 from django.utils import timezone
 
 BASE_ENDPOINT = os.environ.get('BASE_ENDPOINT')
-DEBUG = os.environ.get('DEBUG')
+DEBUG = os.environ.get('CALL_ORACLE')
 
 logger = get_task_logger(__name__)
 
@@ -30,7 +30,7 @@ def get_insight(journaler_id, memoir_id):
     logger.info(f"jprompt: {jprompt.keys()}")
     jprompt = jprompt['text']
     entry = memoir.text
-    if DEBUG == 'True':
+    if DEBUG == '0':
         time.sleep(5)
         insight_text = 'This is a hardcoded test insight.'
     else:
