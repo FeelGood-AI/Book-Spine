@@ -103,7 +103,7 @@ def setNotificationSettings(request):
         notification_settings.fcmToken = request.data['fcm_token']
         notification_settings.save()
     else:
-        NotificationSettings.objects.create(user=user, timezoneName=request.data['timezone_name'], timezoneOffset=request.data['timezone_offset'],fcmToken=request.data['fcm_token'])
+        notification_settings = NotificationSettings.objects.create(user=user, timezoneName=request.data['timezone_name'], timezoneOffset=request.data['timezone_offset'],fcmToken=request.data['fcm_token'])
         return Response({
             'user_id': user.pk,
             'timezone_name': notification_settings.timezoneName,
