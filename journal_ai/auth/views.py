@@ -1,5 +1,5 @@
 import datetime
-from journal_ai.auth.models import UserData
+from journal_ai.auth.models import NotificationSettings, UserData
 
 from journal_ai.prompt_creator.models import Prompt
 from .serializers import UserSerializer
@@ -84,6 +84,35 @@ def acceptOnboardingForUser(request):
     user_data.save()
     return Response({
         'username': user_data.user.username,
-        'id': user_data.user.id,
+        'id': user_data.user.pk,
         'onboarding_complete': user_data.onboarding_complete,
 })
+
+@api_view(['POST'])
+def setNotificationSettings(request):
+    user = User.objects.filter(pk=request.data['user_id']).first()
+    if not user:
+        return Response({
+            'error': 'Invalid User'
+        }) 
+    # TODO: USE SERIALIZER
+    notification_settings = NotificationSettings.objects.filter(user=user).first()
+    if notification_settings:
+        notification_settings.timezoneName = request.data['timezone_name']
+        notification_settings.timezoneOffset = request.data['timezone_offset']
+        notification_settings.fcmToken = request.data['fcm_token']
+        notification_settings.save()
+    else:
+        NotificationSettings.objects.create(user=user, timezoneName=request.data['timezone_name'], timezoneOffset=request.data['timezone_offset'],fcmToken=request.data['fcm_token'])
+        return Response({
+            'user_id': user.pk,
+            'timezone_name': notification_settings.timezoneName,
+            'timezone_offset': notification_settings.timezoneOffset,
+            'fcm_token': notification_settings.fcmToken,
+        }, status=status.HTTP_201_CREATED)
+    return Response({
+        'user_id': user.pk,
+        'timezone_name': notification_settings.timezoneName,
+        'timezone_offset': notification_settings.timezoneOffset,
+        'fcm_token': notification_settings.fcmToken,
+    }, status=status.HTTP_200_OK)
