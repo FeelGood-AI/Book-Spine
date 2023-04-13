@@ -11,6 +11,7 @@ class Memoir(models.Model):
     journaler = models.ForeignKey(User, on_delete=models.CASCADE)
     timestamp = models.DateTimeField()
     prompt = models.ForeignKey(Prompt,null=True, on_delete=models.SET_NULL)
+    encrypted = models.BooleanField(default=False)
 
     def getPrompt(self):
         if self.prompt:

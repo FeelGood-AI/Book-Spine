@@ -3,6 +3,8 @@ import os
 from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.response import Response
+
+from journal_ai.memoirs.encryption import AESCipher
 from .serializers import MemoirPostSerializer, MemoirSerializer
 from rest_framework import status
 from .models import Memoir
@@ -18,6 +20,7 @@ BASE_ENDPOINT = os.environ.get('BASE_ENDPOINT')
 
 from .models import Memoir
 
+ENCRYPTER = AESCipher(os.getenv('AES_CIPHER_KEY'))
 class MemoirView(APIView):
     """
     API View to create or get a memoir user.
@@ -27,11 +30,23 @@ class MemoirView(APIView):
     def post(self, request):
         serializer = MemoirPostSerializer(data=request.data)
         if serializer.is_valid(raise_exception=ValueError):
+            # encrypt data (not best way but can live with it for now)
+            try:
+                request.data['text'] = ENCRYPTER.encrypt(request.data['text'])
+                request.data['encrypted'] = True
+            except:
+                return Response(
+                {
+                    "error": True,
+                    "error_msg": 'Encryption Failed',
+                })
             memoir = serializer.create(validated_data=request.data)
             try:
                 get_insight.delay(request.data['journaler'].id, memoir.id)
             except Exception as e:
                 print("get_insight failed immediately with: ", e)
+
+            
             response_dict = serializer.data
             response_dict['id'] = memoir.id
             return Response(
@@ -71,22 +86,22 @@ def getMemoirsByUser(request, username):
     if user:
         memoirs = Memoir.objects.filter(journaler=user)
         serializer = MemoirSerializer(memoirs, many=True)
+
+        try:
+            # decrypt data
+            for memoir in serializer.data:
+                if memoir['encrypted'] == True:
+                    memoir['text'] = ENCRYPTER.decrypt(memoir['text'])
+        except:
+            return Response({
+                'error': 'Error Decrypting data'
+            })
         return Response(serializer.data)
     return Response({
         'error': 'Invalid User specified'
     })
 
 
-@api_view(['GET'])
-def getMemoirsByUser(request, username):
-    user = User.objects.filter(username=username).first()
-    if user:
-        memoirs = Memoir.objects.filter(journaler=user)
-        serializer = MemoirSerializer(memoirs, many=True)
-        return Response(serializer.data)
-    return Response({
-        'error': 'Invalid User specified'
-    })
 @api_view(['GET'])
 def getMemoirsByDate(request, auth_key):
     test = bytes(auth_key, 'utf-8')
