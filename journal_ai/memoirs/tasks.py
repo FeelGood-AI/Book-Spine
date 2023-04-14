@@ -6,6 +6,7 @@ from celery.utils.log import get_task_logger
 from django.contrib.auth.models import User
 from rest_framework.response import Response
 from journal_ai.memoirs.models import Memoir
+from journal_ai.memoirs.views import ENCRYPTER
 from ..insights.models import Insight
 from ..insights.serializers import InsightSerializer
 from django.utils import timezone
@@ -54,6 +55,11 @@ def get_insight(journaler_id, memoir_id):
                         release_timestamp=timezone.now(), text=insight_text)
         insight.save()
         logger.info('insight saved for memoir id: {0}'.format(memoir_id))
+
+        # encrypt data (not best way but can live with it for now)
+        memoir.text = ENCRYPTER.encrypt(memoir.text)
+        memoir.encrypted = True
+        memoir.save()
     except Exception as e:
         logger.info(f"Exception: {e}")
         return

@@ -30,16 +30,6 @@ class MemoirView(APIView):
     def post(self, request):
         serializer = MemoirPostSerializer(data=request.data)
         if serializer.is_valid(raise_exception=ValueError):
-            # encrypt data (not best way but can live with it for now)
-            try:
-                request.data['text'] = ENCRYPTER.encrypt(request.data['text'])
-                request.data['encrypted'] = True
-            except:
-                return Response(
-                {
-                    "error": True,
-                    "error_msg": 'Encryption Failed',
-                })
             memoir = serializer.create(validated_data=request.data)
             try:
                 get_insight.delay(request.data['journaler'].id, memoir.id)
