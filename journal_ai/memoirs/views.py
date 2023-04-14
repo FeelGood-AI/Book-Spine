@@ -14,13 +14,11 @@ import hashlib
 import requests
 from ..insights.models import Insight
 from .tasks import get_insight
-BASE_ENDPOINT = os.environ.get('BASE_ENDPOINT')
-
-
-
 from .models import Memoir
 
+BASE_ENDPOINT = os.environ.get('BASE_ENDPOINT')
 ENCRYPTER = AESCipher(os.getenv('AES_CIPHER_KEY'))
+
 class MemoirView(APIView):
     """
     API View to create or get a memoir user.

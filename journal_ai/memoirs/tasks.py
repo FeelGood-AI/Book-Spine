@@ -6,7 +6,7 @@ from celery.utils.log import get_task_logger
 from django.contrib.auth.models import User
 from rest_framework.response import Response
 from journal_ai.memoirs.models import Memoir
-from journal_ai.memoirs.views import ENCRYPTER
+from journal_ai.memoirs.encryption import AESCipher
 from ..insights.models import Insight
 from ..insights.serializers import InsightSerializer
 from django.utils import timezone
@@ -15,6 +15,8 @@ BASE_ENDPOINT = os.environ.get('BASE_ENDPOINT')
 DEBUG = os.environ.get('CALL_ORACLE')
 
 logger = get_task_logger(__name__)
+ENCRYPTER = AESCipher(os.getenv('AES_CIPHER_KEY'))
+
 
 # create a shared task to call an external API for getting insight given prompt and journal entry
 
