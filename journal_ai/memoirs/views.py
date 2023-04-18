@@ -13,7 +13,7 @@ from django.contrib.auth.models import User
 import hashlib
 import requests
 from ..insights.models import Insight
-from .tasks import get_insight
+from .tasks import encrypt_memoir, get_insight
 from .models import Memoir
 
 BASE_ENDPOINT = os.environ.get('BASE_ENDPOINT')
@@ -33,6 +33,11 @@ class MemoirView(APIView):
                 get_insight.delay(request.data['journaler'].id, memoir.id)
             except Exception as e:
                 print("get_insight failed immediately with: ", e)
+
+            try:
+                encrypt_memoir.delay(memoir.id)
+            except Exception as e:
+                print("encrypt_memoir failed immediately with: ", e)
 
             
             response_dict = serializer.data
