@@ -30,9 +30,15 @@ class MemoirView(APIView):
         if serializer.is_valid(raise_exception=ValueError):
             memoir = serializer.create(validated_data=request.data)
             try:
-                get_insight.delay(request.data['journaler'].id, memoir.id)
+                get_insight.delay(request.data['journaler'].id, memoir.id, memoir.text)
             except Exception as e:
                 print("get_insight failed immediately with: ", e)
+
+            # call encryption
+            try:
+                encrypt_memoir.delay(memoir.id)
+            except Exception as e:
+                print(f"Encryption failed with exception: {e}")
 
             
             response_dict = serializer.data

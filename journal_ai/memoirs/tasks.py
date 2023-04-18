@@ -20,7 +20,7 @@ ENCRYPTER = AESCipher(os.getenv('AES_CIPHER_KEY'))
 
 
 @shared_task
-def get_insight(journaler_id, memoir_id):
+def get_insight(journaler_id, memoir_id, memoir_text):
     try:
         user = User.objects.filter(pk=journaler_id).first()
         if not user:
@@ -31,16 +31,12 @@ def get_insight(journaler_id, memoir_id):
         jprompt = memoir.getPrompt()
         logger.info(f"jprompt: {jprompt.keys()}")
         jprompt = jprompt['text']
-        entry = memoir.text
-        try:
-           encrypt_memoir.delay(memoir.id)
-        except Exception as e:
-            logger.info(f"Encryption failed with exception: {e}")
+
         if DEBUG == '0':
             time.sleep(5)
             insight_text = 'This is a hardcoded test insight.'
         else:
-            url = f"{BASE_ENDPOINT}/get_insight?entry={entry}&jprompt={jprompt}"
+            url = f"{BASE_ENDPOINT}/get_insight?entry={memoir_text}&jprompt={jprompt}"
             try:
                 response = requests.request("GET", url)
                 insight_text = eval(response.text)['insight']
