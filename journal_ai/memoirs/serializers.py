@@ -22,7 +22,8 @@ class MemoirSerializer(serializers.ModelSerializer):
             'prompt',
             'text',
             'id',
-            'insight'
+            'insight',
+            'encrypted'
         )
         validators = [
             UniqueTogetherValidator(
@@ -53,6 +54,7 @@ class MemoirPostSerializer(serializers.ModelSerializer):
             'prompt',
             'text',
             'id',
+            'encrypted'
         )
         validators = [
             UniqueTogetherValidator(
