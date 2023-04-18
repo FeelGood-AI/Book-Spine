@@ -34,11 +34,6 @@ class MemoirView(APIView):
             except Exception as e:
                 print("get_insight failed immediately with: ", e)
 
-            try:
-                encrypt_memoir.delay(memoir.id)
-            except Exception as e:
-                print("encrypt_memoir failed immediately with: ", e)
-
             
             response_dict = serializer.data
             response_dict['id'] = memoir.id

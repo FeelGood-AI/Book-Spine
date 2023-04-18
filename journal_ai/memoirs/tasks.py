@@ -32,6 +32,10 @@ def get_insight(journaler_id, memoir_id):
         logger.info(f"jprompt: {jprompt.keys()}")
         jprompt = jprompt['text']
         entry = memoir.text
+        try:
+           encrypt_memoir.delay(memoir.id)
+        except Exception as e:
+            logger.info(f"Encryption failed with exception: {e}")
         if DEBUG == '0':
             time.sleep(5)
             insight_text = 'This is a hardcoded test insight.'
@@ -55,11 +59,6 @@ def get_insight(journaler_id, memoir_id):
                         release_timestamp=timezone.now(), text=insight_text)
         insight.save()
         logger.info('insight saved for memoir id: {0}'.format(memoir_id))
-
-        # encrypt data (not best way but can live with it for now)
-        memoir.text = ENCRYPTER.encrypt(memoir.text)
-        memoir.encrypted = True
-        memoir.save()
     except Exception as e:
         logger.info(f"Exception: {e}")
         return
