@@ -78,7 +78,7 @@ def getMemoirByMemoirId(request, memoir_id):
 def getMemoirsByUser(request, username):
     user = User.objects.filter(username=username).first()
     if user:
-        memoirs = Memoir.objects.filter(journaler=user)
+        memoirs = Memoir.objects.filter(journaler=user).order_by('timestamp')
         serializer = MemoirSerializer(memoirs, many=True)
 
         try:
